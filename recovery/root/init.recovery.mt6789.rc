@@ -4,6 +4,9 @@ on init
     setprop sys.usb.configfs 1
     setprop sys.usb.controller "musb-hdrc"
     setprop sys.usb.ffs.aio_compat 0
+    
+    # Load MediaTek Touch Drivers
+    exec u:r:modprobe:s0 root root -- /vendor/bin/modprobe -a -d /vendor/lib/modules focaltech_touch goodix_core
 
 on fs && property:ro.debuggable=0
     # distinguish USB shoulde connect or not, i.e. CDP vs SDP
