@@ -114,3 +114,14 @@ TW_SCREEN_BLANK_ON_BOOT := true
 TW_INPUT_BLACKLIST := "hbtp_vm"
 TW_USE_TOOLBOX := true
 TW_INCLUDE_REPACKTOOLS := true
+# TWRP Specific Features Configuration
+TW_THEME := portrait_hdpi
+TW_INPUT_BLACKLIST := "hbtp_vm"
+RECOVERY_TOUCHSCREEN_SWAP_XY := false
+
+# Android 14 Storage & Decryption Flags
+TW_INCLUDE_CRYPTO := true
+TW_INCLUDE_FBE := true
+BOARD_HAS_LARGE_DISK := true
+TW_USER_DATA_MEDIA_DEPS := true
+
