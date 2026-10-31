@@ -1,0 +1,26 @@
+name: OrangeFox - Builder
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Building Orangefox Recovery
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: OrangeFox Build
+        uses: UWU-TEAM/UWU-OrangeFox-Builder@v1.0.0
+        with:
+          USER_NAME: 'idongpword'
+          USER_EMAIL: 'your_email@example.com'
+          DEVICE_TREE: 'https://github.com/idongpword/android_device_oukitel_wp19pro_2026'
+          DEVICE_TREE_BRANCH: 'main'
+          DEVICE_PATH: 'device/oukitel/WP19_Pro'
+          DEVICE_NAME: 'WP19_Pro'
+          BUILD_TARGET: 'recovery'
+          GH_RELEASE: 'true'
