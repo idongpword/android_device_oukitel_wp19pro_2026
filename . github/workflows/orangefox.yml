@@ -1,26 +1,59 @@
-name: OrangeFox - Builder
+name: Verified TWRP Recovery Builder
 
 on:
   workflow_dispatch:
 
 jobs:
   build:
-    name: Building Orangefox Recovery
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     permissions:
       contents: write
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
 
-      - name: OrangeFox Build
-        uses: UWU-TEAM/UWU-OrangeFox-Builder@v1.0.0
-        with:
-          USER_NAME: 'idongpword'
-          USER_EMAIL: 'your_email@example.com'
-          DEVICE_TREE: 'https://github.com/idongpword/android_device_oukitel_wp19pro_2026'
-          DEVICE_TREE_BRANCH: 'main'
-          DEVICE_PATH: 'device/oukitel/WP19_Pro'
-          DEVICE_NAME: 'WP19_Pro'
-          BUILD_TARGET: 'recovery'
-          GH_RELEASE: 'true'
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Clean and Setup Environment
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y gperf gcc-multilib g++-multilib libc6-dev-i386 lib32ncurses5-dev x11proto-core-dev libx11-dev lib32z1-dev libgl1-mesa-dev libxml2-utils xsltproc unzip fontconfig
+        docker rmi $(docker images -q)
+        sudo rm -rf /usr/share/dotnet /etc/mysql /etc/php /usr/local/lib/android
+        sudo mkdir -p /home/runner/work
+        sudo chown -R runner:runner /home/runner/work
+
+    - name: Install Repo Tool
+      run: |
+        mkdir -p ~/bin
+        curl https://googleapis.com > ~/bin/repo
+        chmod a+x ~/bin/repo
+        sudo ln -sf ~/bin/repo /usr/bin/repo
+
+    - name: Sync Verified Android 12.1 Minimal Manifest
+      run: |
+        git config --global user.name "idongpword"
+        git config --global user.email "idongpword@gmail.com"
+        cd /home/runner/work
+        mkdir twrp
+        cd twrp
+        repo init --depth=1 -u https://github.com -b twrp-12.1
+        repo sync -c -j$(nproc --all) --force-sync --no-clone-bundle --no-tags
+
+    - name: Clone Your Oukitel Device Tree
+      run: |
+        cd /home/runner/work/twrp
+        git clone https://github.com device/oukitel/WP19_Pro
+
+    - name: Build TWRP Recovery Image
+      run: |
+        cd /home/runner/work/twrp
+        export ALLOW_MISSING_DEPENDENCIES=true
+        source build/envsetup.sh
+        lunch omni_WP19_Pro-eng
+        make recoveryimage -j$(nproc --all)
+
+    - name: Upload Recovery Image
+      uses: actions/upload-artifact@v4
+      with:
+        name: TWRP-Oukitel-WP19Pro
+        path: /home/runner/work/twrp/out/target/product/WP19_Pro/recovery.img
