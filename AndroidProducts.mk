@@ -9,6 +9,5 @@ PRODUCT_MAKEFILES := \
     $(LOCAL_DIR)/omni_WP19_Pro.mk
 
 COMMON_LUNCH_CHOICES := \
-    omni_WP19_Pro-user \
-    omni_WP19_Pro-userdebug \
-    omni_WP19_Pro-eng
+    omni_WP19_Pro-eng \
+    omni_WP19_Pro-userdebug
